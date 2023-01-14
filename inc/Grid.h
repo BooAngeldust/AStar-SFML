@@ -24,6 +24,8 @@ private:
 	void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 	void drawPath(sf::RenderTarget& target, sf::RenderStates states) const;
 
+	void reset();
+
 public:
 	Grid(sf::RenderWindow& window, float startX, float startY, int rows, int cols, float nodeSize);
 

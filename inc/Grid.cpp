@@ -90,6 +90,21 @@ void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	drawPath(target, states);
 }
 
+void Grid::reset()
+{
+	for (auto& col : mGrid)
+	{
+		for (auto& row : col)
+		{
+			row->f = 99999999;
+			row->g = 0;
+			row->h = 0;
+			row->parent = nullptr;
+			row->neighbours.clear();
+		}
+	}
+}
+
 void Grid::update(float dt)
 {
 	// Allow placing walls 
@@ -131,6 +146,8 @@ void Grid::update(float dt)
 					row->parent = nullptr;
 				}
 			}
+
+			reset();
 
 			Path::solve(mGrid, Path::Algorithm::ASTAR);
 			
