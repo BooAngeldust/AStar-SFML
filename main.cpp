@@ -15,7 +15,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "AStar",sf::Style::Close);
 	window.setFramerateLimit(0);
 
-	Grid grid(window, 0, 0, 5, 5, 120);
+	Grid grid(window, 0, 0, 20, 20, 30);
 
 	sf::Clock clock;
 	while (window.isOpen())
@@ -32,6 +32,7 @@ int main()
 		// update 
 		if (window.hasFocus())
 			grid.update(dt);
+
 		// render
 		window.clear();
 		window.draw(grid);

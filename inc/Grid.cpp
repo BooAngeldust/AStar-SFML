@@ -63,8 +63,36 @@ void Grid::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
 void Grid::drawPath(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	// Trace back the path from finish node
+	
+	Node::Ptr currentNode = nullptr;
 
+	// Find finishNode
+	for (auto col : mGrid)
+	{
+		std::vector<Node::Ptr>::iterator it = std::find_if(col.begin(), col.end(), [](Node::Ptr node) { return node->type == NodeType::Finish;});
+		if (it != col.end())
+		{
+			currentNode = (*it);
+			break;
+		}
+	}
 
+	if (currentNode == nullptr)
+		return;
+
+	// Recursively draw every node
+	while (currentNode->parent != nullptr)
+	{
+		sf::RectangleShape nodeShape;
+
+		nodeShape.setFillColor(sf::Color(0,255,0,100));
+
+		nodeShape.setPosition(mStartX + (mNodeSize * currentNode->row), mStartY + (mNodeSize * currentNode->col));
+		nodeShape.setSize(sf::Vector2f(mNodeSize, mNodeSize));
+		target.draw(nodeShape, states);
+
+		currentNode = currentNode->parent;
+	}
 }
 
 void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -83,10 +111,6 @@ void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			target.draw(nodeShape, states);
 		}
 	}
-
-#ifdef DEBUG
-	drawDebug(target, states);
-#endif
 	drawPath(target, states);
 }
 
@@ -110,8 +134,6 @@ void Grid::update(float dt)
 	// Allow placing walls 
 	// Get mouse pos relative to window
 	sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
-
-
 
 	// check if mouse is on grid
 	if (mousePos.x >= mStartX && mousePos.y >= mStartY &&
@@ -139,14 +161,6 @@ void Grid::update(float dt)
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
-			for (auto& col : mGrid)
-			{
-				for (auto& row : col)
-				{
-					row->parent = nullptr;
-				}
-			}
-
 			reset();
 
 			Path::solve(mGrid, Path::Algorithm::ASTAR);
