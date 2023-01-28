@@ -2,20 +2,19 @@
 //
 
 #include <vector>
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Grid.h"
 
-#define WINDOW_WIDTH 600
-#define WINDOW_HEIGHT 600
-
-
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "AStar",sf::Style::Close);
+	const int W_WIDTH = 1000;
+	const int W_HEIGHT = 800;
+	const int NODE_SIZE = 40;
+
+	sf::RenderWindow window(sf::VideoMode(W_WIDTH, W_HEIGHT), "AStar");
 	window.setFramerateLimit(0);
 
-	Grid grid(window, 0, 0, 20, 20, 30);
+	Grid grid(window, 0, 0, W_WIDTH / NODE_SIZE, W_HEIGHT / NODE_SIZE, NODE_SIZE);
 
 	sf::Clock clock;
 	while (window.isOpen())
@@ -27,16 +26,13 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			
 		}
 		// update 
 		if (window.hasFocus())
 			grid.update(dt);
 
 		// render
-		window.clear();
-		window.draw(grid);
-		window.display();
+		grid.draw();
 	}
 
 	return 0;

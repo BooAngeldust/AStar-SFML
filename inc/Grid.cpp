@@ -1,21 +1,15 @@
 #include "Grid.h"
 #include "Path.h"
 
-
-#include <iostream>
-
-
-
 Grid::Grid(sf::RenderWindow& window, float startX, float startY, int rows, int cols, float nodeSize)
 	: mGrid()
-	, mNodeSize(nodeSize)
-	, mWindow(window)
 	, mStartX(startX)
 	, mStartY(startY)
-	, mFont()
+	, mNodeSize(nodeSize)
+	, mColorMap()
+	, mWindow(window)
+	, mReadyToDraw(true)
 {
-	mFont.loadFromFile("fonts/font.otf");
-
 	// Initialize Grid
 	for (int col = 0; col < cols; col++)
 	{
@@ -28,7 +22,7 @@ Grid::Grid(sf::RenderWindow& window, float startX, float startY, int rows, int c
 
 	// Set start and finish node
 	mGrid[0][0]->type = NodeType::Start;
-	mGrid[mGrid[0].size() - 1][mGrid.size() - 1]->type = NodeType::Finish;
+	mGrid[mGrid.size() - 1][mGrid[0].size() - 1]->type = NodeType::Finish;
 
 	// Initialize color map
 	mColorMap[NodeType::Path] = sf::Color::White;
@@ -37,33 +31,9 @@ Grid::Grid(sf::RenderWindow& window, float startX, float startY, int rows, int c
 	mColorMap[NodeType::Finish] = sf::Color::Red;
 }
 
-void Grid::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
-{
-	for (auto& col : mGrid)
-	{
-		for (auto& row : col)
-		{
-			sf::Text nodeText;
-			nodeText.setString("f: " + std::to_string(row->f).substr(0, 3) +
-				"\ng: " + std::to_string(row->g).substr(0,3) +
-				"\nh: " + std::to_string(row->h).substr(0, 3) +
-				"\n_p: " + std::to_string(int(row->parent.get())) +
-				"\n_s: " + std::to_string(int(row.get())));
-			nodeText.setFont(mFont);
-			nodeText.setPosition(mStartX + (mNodeSize * row->row), mStartY + (mNodeSize * row->col));
-			nodeText.setFillColor(sf::Color::Black);
-			nodeText.setCharacterSize(10);
-
-
-			target.draw(nodeText, states);
-		}
-	}
-}
-
-void Grid::drawPath(sf::RenderTarget& target, sf::RenderStates states) const
+void Grid::drawPath()
 {
 	// Trace back the path from finish node
-	
 	Node::Ptr currentNode = nullptr;
 
 	// Find finishNode
@@ -80,23 +50,32 @@ void Grid::drawPath(sf::RenderTarget& target, sf::RenderStates states) const
 	if (currentNode == nullptr)
 		return;
 
-	// Recursively draw every node
+	// Draw every node
 	while (currentNode->parent != nullptr)
 	{
 		sf::RectangleShape nodeShape;
 
 		nodeShape.setFillColor(sf::Color(0,255,0,100));
+		nodeShape.setOutlineThickness(1);
+		nodeShape.setOutlineColor(sf::Color::Black);
 
 		nodeShape.setPosition(mStartX + (mNodeSize * currentNode->row), mStartY + (mNodeSize * currentNode->col));
 		nodeShape.setSize(sf::Vector2f(mNodeSize, mNodeSize));
-		target.draw(nodeShape, states);
+		mWindow.draw(nodeShape);
 
 		currentNode = currentNode->parent;
 	}
 }
 
-void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void Grid::draw()
 {
+	if (!mReadyToDraw)
+		return;
+
+	mReadyToDraw = false;
+
+	mWindow.clear();
+
 	for (auto& col : mGrid)
 	{
 		for (auto& row : col)
@@ -108,10 +87,13 @@ void Grid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			nodeShape.setPosition(mStartX + (mNodeSize * row->row), mStartY + (mNodeSize * row->col));
 			nodeShape.setSize(sf::Vector2f(mNodeSize, mNodeSize));
 
-			target.draw(nodeShape, states);
+			mWindow.draw(nodeShape);
 		}
 	}
-	drawPath(target, states);
+
+	drawPath();
+
+	mWindow.display();
 }
 
 void Grid::reset()
@@ -129,24 +111,34 @@ void Grid::reset()
 	}
 }
 
+void Grid::solve()
+{
+	reset();
+	Path::solve(mGrid, Path::Algorithm::ASTAR);
+	mReadyToDraw = true;
+}
+
 void Grid::update(float dt)
 {
 	// Allow placing walls 
 	// Get mouse pos relative to window
 	sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
 
+	float mouse_x = mousePos.x * (mWindow.getDefaultView().getSize().x / mWindow.getSize().x );
+	float mouse_y = mousePos.y * (mWindow.getDefaultView().getSize().y / mWindow.getSize().y);
+
 	// check if mouse is on grid
-	if (mousePos.x >= mStartX && mousePos.y >= mStartY &&
-		mousePos.x <= mStartX + (mGrid[0].size() * mNodeSize) - 1 &&
-		mousePos.y <= mStartY + (mGrid.size() * mNodeSize) - 1)
+	if (mouse_x >= mStartX && mousePos.y >= mStartY &&
+		mouse_x <= mStartX + (mGrid[0].size() * mNodeSize) - 1 &&
+		mouse_y <= mStartY + (mGrid.size() * mNodeSize) - 1)
 	{
 		// Adjust mousePos relative to grid
-		mousePos.x -= mStartX;
-		mousePos.y -= mStartY;
+		mouse_x -= mStartX;
+		mouse_y -= mStartY;
 
 		// Calculate which row/col is effected
-		int row = mousePos.x / mNodeSize;
-		int col = mousePos.y / mNodeSize;
+		int row = int(mouse_x / mNodeSize);
+		int col = int(mouse_y / mNodeSize);
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 		{
@@ -154,8 +146,7 @@ void Grid::update(float dt)
 			{
 				mGrid[col][row]->type = NodeType::Path;
 
-				reset();
-				Path::solve(mGrid, Path::Algorithm::ASTAR);
+				solve();
 			}
 		}
 		else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -164,14 +155,8 @@ void Grid::update(float dt)
 			{
 				mGrid[col][row]->type = NodeType::Barrier;
 
-				reset();
-				Path::solve(mGrid, Path::Algorithm::ASTAR);
+				solve();
 			}
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		{
-			reset();
 		}
 	}
 }
