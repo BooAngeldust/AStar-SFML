@@ -151,20 +151,27 @@ void Grid::update(float dt)
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 		{
 			if (mGrid[col][row]->type != NodeType::Start && mGrid[col][row]->type != NodeType::Finish)
+			{
 				mGrid[col][row]->type = NodeType::Path;
+
+				reset();
+				Path::solve(mGrid, Path::Algorithm::ASTAR);
+			}
 		}
 		else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
 			if (mGrid[col][row]->type != NodeType::Start && mGrid[col][row]->type != NodeType::Finish)
+			{
 				mGrid[col][row]->type = NodeType::Barrier;
+
+				reset();
+				Path::solve(mGrid, Path::Algorithm::ASTAR);
+			}
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
 			reset();
-
-			Path::solve(mGrid, Path::Algorithm::ASTAR);
-			
 		}
 	}
 }
