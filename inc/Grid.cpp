@@ -10,25 +10,33 @@ Grid::Grid(sf::RenderWindow& window, float startX, float startY, int rows, int c
 	, mWindow(window)
 	, mReadyToDraw(true)
 {
+	// Initialize color map
+	mColorMap[NodeType::Path] = sf::Color::White;
+	mColorMap[NodeType::Barrier] = sf::Color::Black;
+	mColorMap[NodeType::Start] = sf::Color::Green;
+	mColorMap[NodeType::Finish] = sf::Color::Red;
+
 	// Initialize Grid
 	for (int col = 0; col < cols; col++)
 	{
 		mGrid.push_back(std::vector<Node::Ptr>());
 		for (int row = 0; row < rows; row++)
 		{
-			mGrid[col].push_back(std::make_shared<Node>(row, col));
+			Node::Ptr node = std::make_shared<Node>(row, col);
+			node->drawRect.setPosition(startX + (row * nodeSize), startY + (col * nodeSize));
+			node->drawRect.setSize(sf::Vector2f(nodeSize, nodeSize));
+			// Start node
+			if (row == 0 && col == 0)
+				node->type = NodeType::Start;
+
+			// Target node
+			else if (row == rows-1 && col == cols - 1)
+				node->type = NodeType::Finish;
+
+			node->drawRect.setFillColor(mColorMap[node->type]);
+			mGrid[col].push_back(std::move(node));
 		}
 	}
-
-	// Set start and finish node
-	mGrid[0][0]->type = NodeType::Start;
-	mGrid[mGrid.size() - 1][mGrid[0].size() - 1]->type = NodeType::Finish;
-
-	// Initialize color map
-	mColorMap[NodeType::Path] = sf::Color::White;
-	mColorMap[NodeType::Barrier] = sf::Color::Black;
-	mColorMap[NodeType::Start] = sf::Color::Green;
-	mColorMap[NodeType::Finish] = sf::Color::Red;
 }
 
 void Grid::drawPath()
@@ -53,15 +61,13 @@ void Grid::drawPath()
 	// Draw every node
 	while (currentNode->parent != nullptr)
 	{
-		sf::RectangleShape nodeShape;
+		sf::RectangleShape drawRect;
 
-		nodeShape.setFillColor(sf::Color(0,255,0,100));
-		nodeShape.setOutlineThickness(1);
-		nodeShape.setOutlineColor(sf::Color::Black);
+		drawRect.setPosition(currentNode->drawRect.getPosition());
+		drawRect.setFillColor(sf::Color(100,100,0,100));
+		drawRect.setSize(currentNode->drawRect.getSize());
 
-		nodeShape.setPosition(mStartX + (mNodeSize * currentNode->row), mStartY + (mNodeSize * currentNode->col));
-		nodeShape.setSize(sf::Vector2f(mNodeSize, mNodeSize));
-		mWindow.draw(nodeShape);
+		mWindow.draw(drawRect);
 
 		currentNode = currentNode->parent;
 	}
@@ -72,28 +78,20 @@ void Grid::draw()
 	if (!mReadyToDraw)
 		return;
 
-	mReadyToDraw = false;
-
 	mWindow.clear();
 
 	for (auto& col : mGrid)
 	{
 		for (auto& row : col)
 		{
-			sf::RectangleShape nodeShape;
-
-			nodeShape.setFillColor(mColorMap.at(row->type));
-			
-			nodeShape.setPosition(mStartX + (mNodeSize * row->row), mStartY + (mNodeSize * row->col));
-			nodeShape.setSize(sf::Vector2f(mNodeSize, mNodeSize));
-
-			mWindow.draw(nodeShape);
+			mWindow.draw(row->drawRect);
 		}
 	}
 
 	drawPath();
 
 	mWindow.display();
+	mReadyToDraw = false;
 }
 
 void Grid::reset()
@@ -142,20 +140,22 @@ void Grid::update(float dt)
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 		{
-			if (mGrid[col][row]->type != NodeType::Start && mGrid[col][row]->type != NodeType::Finish)
+			if (mGrid[col][row]->type != NodeType::Start && mGrid[col][row]->type != NodeType::Finish && mGrid[col][row]->type != NodeType::Path)
 			{
 				mGrid[col][row]->type = NodeType::Path;
+				mGrid[col][row]->drawRect.setFillColor(mColorMap[NodeType::Path]);
 
-				solve();
+				mReadyToDraw = true;
 			}
 		}
 		else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
-			if (mGrid[col][row]->type != NodeType::Start && mGrid[col][row]->type != NodeType::Finish)
+			if (mGrid[col][row]->type != NodeType::Start && mGrid[col][row]->type != NodeType::Finish && mGrid[col][row]->type != NodeType::Barrier)
 			{
 				mGrid[col][row]->type = NodeType::Barrier;
+				mGrid[col][row]->drawRect.setFillColor(mColorMap[NodeType::Barrier]);
 
-				solve();
+				mReadyToDraw = true;
 			}
 		}
 	}

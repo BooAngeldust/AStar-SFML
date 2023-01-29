@@ -25,11 +25,12 @@ private:
 	void drawPath();
 
 	void reset();
-	void solve();
+	
 
 public:
 	Grid(sf::RenderWindow& window, float startX, float startY, int rows, int cols, float nodeSize);
 
 	void draw();
 	void update(float dt);
+	void solve();
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <SFML/Graphics.hpp>
 
 enum class NodeType
 {
@@ -22,8 +23,15 @@ struct Node
 	int row;
 	int col;
 
+	sf::RectangleShape drawRect;
+
 	NodeType type;
+
 	std::vector<Ptr> neighbours;
+
+	friend class Path;
+	friend class Grid;
+
 
 	Node(int row, int col, NodeType type = NodeType::Path)
 		: parent(nullptr)

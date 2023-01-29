@@ -74,7 +74,7 @@ void Path::solveAStar(Grid::NodeGrid& grid)
 {
 	std::vector<Node::Ptr> openList;    // Yet to visit nodes
 	std::vector<Node::Ptr> closedList;  // Visited nodes
-	
+	std::vector<Node::Ptr> neighbours;
 
 	// Start Node
 	Node::Ptr startNode = findStartNode(grid);
@@ -88,6 +88,12 @@ void Path::solveAStar(Grid::NodeGrid& grid)
 	while (!openList.empty())
 	{
 		Node::Ptr currentNode = openList[0];
+
+		// If currentNode is target node we're done
+		if (currentNode->type == NodeType::Finish)
+		{
+			return;
+		}
 
 		// currentNode = node with lowest f score in openList
 		for (Node::Ptr node : openList)
@@ -103,23 +109,23 @@ void Path::solveAStar(Grid::NodeGrid& grid)
 		closedList.push_back(currentNode);
 		
 		// Find currentNode's neighbours
-		currentNode->neighbours.clear();
+		neighbours.clear();
 
 		// Left 
 		if (currentNode->row > 0)
-			currentNode->neighbours.push_back(grid[currentNode->col][currentNode->row - 1]);
+			neighbours.push_back(grid[currentNode->col][currentNode->row - 1]);
 		// Right
 		if (currentNode->row < grid[0].size() - 1)
-			currentNode->neighbours.push_back(grid[currentNode->col][currentNode->row + 1]);
+			neighbours.push_back(grid[currentNode->col][currentNode->row + 1]);
 		// Below
 		if (currentNode->col < grid.size() - 1)
-			currentNode->neighbours.push_back(grid[currentNode->col + 1][currentNode->row]);
+			neighbours.push_back(grid[currentNode->col + 1][currentNode->row]);
 		// Above
 		if (currentNode->col > 0)
-			currentNode->neighbours.push_back(grid[currentNode->col - 1][currentNode->row]);
+			neighbours.push_back(grid[currentNode->col - 1][currentNode->row]);
 
 		// Loop through every neighbour
-		for (Node::Ptr neighbour : currentNode->neighbours)
+		for (Node::Ptr neighbour : neighbours)
 		{
 			if (neighbour->type == NodeType::Barrier)
 				continue;
@@ -160,10 +166,6 @@ void Path::solveAStar(Grid::NodeGrid& grid)
 				openList.push_back(neighbour);
 			}
 		}
-		// If currentNode is target node we're done
-		if (currentNode->type == NodeType::Finish)
-		{
-			return;
-		}
+		
 	}
 }
