@@ -41,7 +41,6 @@ struct Node
 		, row(row)
 		, col(col)
 		, type(type)
-		, neighbours()
 	{
 	}
 };

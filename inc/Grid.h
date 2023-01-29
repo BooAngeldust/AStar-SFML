@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Node.hpp"
 
-class Grid
+class Grid : public sf::Drawable
 {
 public:
 	typedef std::vector<std::vector<Node::Ptr>> NodeGrid;
@@ -19,18 +19,16 @@ private:
 	std::map<NodeType, sf::Color> mColorMap;
 
 	sf::RenderWindow& mWindow;
+	sf::Font mFont;
 
-	bool mReadyToDraw;
-
-	void drawPath();
+	void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
+	void drawPath(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void reset();
-	
 
 public:
 	Grid(sf::RenderWindow& window, float startX, float startY, int rows, int cols, float nodeSize);
 
-	void draw();
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void update(float dt);
-	void solve();
 };
