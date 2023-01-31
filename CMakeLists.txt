@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 project ("AStar")
 
 # Add source to this project's executable.
-add_executable (AStar "main.cpp"  "inc/Grid.h" "inc/Grid.cpp"  "inc/Node.hpp"    "inc/Path.h" "inc/Path.cpp")
+add_executable (AStar WIN32 "main.cpp"  "inc/Grid.h" "inc/Grid.cpp"  "inc/Node.hpp"    "inc/Path.h" "inc/Path.cpp")
 # add_executable(_Test "test.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

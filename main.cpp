@@ -5,10 +5,12 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Grid.h"
+#include <Windows.h>
 
-static const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
+const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
-int main()
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+	PSTR lpCmdLine, INT nCmdShow)
 {
 	const unsigned int W_WIDTH = 1000;
 	const unsigned int W_HEIGHT = 800;
