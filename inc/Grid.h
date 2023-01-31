@@ -23,10 +23,13 @@ private:
 	void drawPath(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void reset();
+	
 
 public:
 	Grid(sf::RenderWindow& window, float startX, float startY, int rows, int cols, float nodeSize);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void update(float dt);
+
+	void solve();
 };

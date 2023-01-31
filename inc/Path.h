@@ -1,6 +1,7 @@
 #pragma once
 #include "Grid.h"
-
+#include <SFML/System/Clock.hpp>
+#include <iostream>
 
 class Path
 {

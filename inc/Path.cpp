@@ -1,5 +1,6 @@
 #include "Path.h"
 
+
 Node::Ptr Path::findStartNode(Grid::NodeGrid& grid)
 {
 	std::vector<Node::Ptr>::iterator it;
@@ -50,6 +51,7 @@ Node::Ptr Path::findEndNode(Grid::NodeGrid& grid)
 
 void Path::solve(Grid::NodeGrid& grid, Algorithm algorithm)
 {
+	sf::Clock clock;
 	switch (algorithm)
 	{
 	case Algorithm::ASTAR:
@@ -58,6 +60,10 @@ void Path::solve(Grid::NodeGrid& grid, Algorithm algorithm)
 	default:
 		break;
 	}
+	float timeTaken = clock.restart().asSeconds();
+
+	std::cout << "Time taken: " + std::to_string(timeTaken) + "\n";
+
 }
 
 Node::Ptr Path::find(Node::Ptr node, std::vector<Node::Ptr> list)
@@ -74,7 +80,6 @@ void Path::solveAStar(Grid::NodeGrid& grid)
 {
 	std::vector<Node::Ptr> openList;    // Yet to visit nodes
 	std::vector<Node::Ptr> closedList;  // Visited nodes
-	std::vector<Node::Ptr> neighbours;
 
 	// Start Node
 	Node::Ptr startNode = findStartNode(grid);
@@ -107,25 +112,9 @@ void Path::solveAStar(Grid::NodeGrid& grid)
 
 		// Add currentNode to closed list and check it's neighbours
 		closedList.push_back(currentNode);
-		
-		// Find currentNode's neighbours
-		neighbours.clear();
-
-		// Left 
-		if (currentNode->row > 0)
-			neighbours.push_back(grid[currentNode->col][currentNode->row - 1]);
-		// Right
-		if (currentNode->row < grid[0].size() - 1)
-			neighbours.push_back(grid[currentNode->col][currentNode->row + 1]);
-		// Below
-		if (currentNode->col < grid.size() - 1)
-			neighbours.push_back(grid[currentNode->col + 1][currentNode->row]);
-		// Above
-		if (currentNode->col > 0)
-			neighbours.push_back(grid[currentNode->col - 1][currentNode->row]);
 
 		// Loop through every neighbour
-		for (Node::Ptr neighbour : neighbours)
+		for (Node::Ptr neighbour : currentNode->neighbours)
 		{
 			if (neighbour->type == NodeType::Barrier)
 				continue;
