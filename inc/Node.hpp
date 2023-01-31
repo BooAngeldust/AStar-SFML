@@ -36,7 +36,9 @@ struct Node
 		, f(9999999)
 		, row(row)
 		, col(col)
+		, drawRect()
 		, type(type)
 	{
+		
 	}
 };

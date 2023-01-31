@@ -125,6 +125,7 @@ void Path::solveAStar(Grid::NodeGrid& grid)
 			float temp_f = temp_h + temp_g;
 
 			// Check if neighbour in closedList
+			// #FIXME: find() is expensive, store a flag if node is in closed/openLists? 
 			if (find(neighbour, closedList) != nullptr)
 			{
 				if (temp_g < neighbour->g)

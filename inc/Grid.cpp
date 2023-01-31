@@ -154,7 +154,6 @@ void Grid::update(float dt)
 			{
 				mGrid[col][row]->type = NodeType::Path;
 				mGrid[col][row]->drawRect.setFillColor(mColorMap[NodeType::Path]);
-
 			}
 		}
 		else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -163,7 +162,6 @@ void Grid::update(float dt)
 			{
 				mGrid[col][row]->type = NodeType::Barrier;
 				mGrid[col][row]->drawRect.setFillColor(mColorMap[NodeType::Barrier]);
-
 			}
 		}
 	}

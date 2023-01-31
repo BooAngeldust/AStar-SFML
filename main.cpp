@@ -6,7 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include "Grid.h"
 
-static const sf::Time TimePerFrame = sf::seconds(1.f / 1200.f);
+static const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 int main()
 {
@@ -47,7 +47,7 @@ int main()
 			{
 				if (event.type == sf::Event::Closed)
 					window.close();
-				else if (event.type == sf::Event::MouseButtonReleased)
+				if (event.type == sf::Event::MouseButtonReleased)
 					grid.solve();
 			}
 			// update 
@@ -73,9 +73,4 @@ int main()
 	}
 
 	return 0;
-}
-
-void renderFPS(sf::Time dt)
-{
-
 }
