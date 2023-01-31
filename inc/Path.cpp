@@ -52,18 +52,19 @@ Node::Ptr Path::findEndNode(Grid::NodeGrid& grid)
 void Path::solve(Grid::NodeGrid& grid, Algorithm algorithm)
 {
 	sf::Clock clock;
+
 	switch (algorithm)
 	{
 	case Algorithm::ASTAR:
 		solveAStar(grid);
+		std::cout << "[" << LOG_ALGORITHM(Algorithm::ASTAR) << "]: ";
 		break;
 	default:
 		break;
 	}
 	float timeTaken = clock.restart().asSeconds();
 
-	std::cout << "Time taken: " + std::to_string(timeTaken) + "\n";
-
+	 std::cout << "Time taken: " << std::to_string(timeTaken) << "\n";
 }
 
 Node::Ptr Path::find(Node::Ptr node, std::vector<Node::Ptr> list)

@@ -3,6 +3,8 @@
 #include <SFML/System/Clock.hpp>
 #include <iostream>
 
+#define LOG_ALGORITHM(name) #name
+
 class Path
 {
 public:

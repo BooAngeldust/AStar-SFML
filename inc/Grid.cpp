@@ -42,7 +42,7 @@ Grid::Grid(sf::RenderWindow& window, float startX, float startY, int rows, int c
 
 	// Set start and finish node
 	mGrid[0][0]->type = NodeType::Start;
-	mGrid[mGrid[0].size() - 1][mGrid.size() - 1]->type = NodeType::Finish;
+	mGrid[mGrid.size() - 1][mGrid[0].size() - 1]->type = NodeType::Finish;
 
 	// Initialize color map
 	mColorMap[NodeType::Path] = sf::Color::White;
