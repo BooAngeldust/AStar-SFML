@@ -19,9 +19,7 @@ private:
 	std::map<NodeType, sf::Color> mColorMap;
 
 	sf::RenderWindow& mWindow;
-	sf::Font mFont;
 
-	void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 	void drawPath(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void reset();

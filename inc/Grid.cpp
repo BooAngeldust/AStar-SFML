@@ -2,20 +2,13 @@
 #include "Path.h"
 
 
-#include <iostream>
-
-
-
 Grid::Grid(sf::RenderWindow& window, float startX, float startY, int rows, int cols, float nodeSize)
 	: mGrid()
 	, mNodeSize(nodeSize)
 	, mWindow(window)
 	, mStartX(startX)
 	, mStartY(startY)
-	, mFont()
 {
-	mFont.loadFromFile("fonts/font.otf");
-
 	// Initialize Grid
 	for (int col = 0; col < cols; col++)
 	{
@@ -35,29 +28,6 @@ Grid::Grid(sf::RenderWindow& window, float startX, float startY, int rows, int c
 	mColorMap[NodeType::Barrier] = sf::Color::Black;
 	mColorMap[NodeType::Start] = sf::Color::Green;
 	mColorMap[NodeType::Finish] = sf::Color::Red;
-}
-
-void Grid::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
-{
-	for (auto& col : mGrid)
-	{
-		for (auto& row : col)
-		{
-			sf::Text nodeText;
-			nodeText.setString("f: " + std::to_string(row->f).substr(0, 3) +
-				"\ng: " + std::to_string(row->g).substr(0,3) +
-				"\nh: " + std::to_string(row->h).substr(0, 3) +
-				"\n_p: " + std::to_string(int(row->parent.get())) +
-				"\n_s: " + std::to_string(int(row.get())));
-			nodeText.setFont(mFont);
-			nodeText.setPosition(mStartX + (mNodeSize * row->row), mStartY + (mNodeSize * row->col));
-			nodeText.setFillColor(sf::Color::Black);
-			nodeText.setCharacterSize(10);
-
-
-			target.draw(nodeText, states);
-		}
-	}
 }
 
 void Grid::drawPath(sf::RenderTarget& target, sf::RenderStates states) const

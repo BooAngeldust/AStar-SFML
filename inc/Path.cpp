@@ -1,5 +1,4 @@
 #include "Path.h"
-#include "globals.h"
 
 Node::Ptr Path::findStartNode(Grid::NodeGrid& grid)
 {

@@ -29,10 +29,6 @@ struct Node
 
 	std::vector<Ptr> neighbours;
 
-	friend class Path;
-	friend class Grid;
-
-
 	Node(int row, int col, NodeType type = NodeType::Path)
 		: parent(nullptr)
 		, g(0)
